@@ -3,7 +3,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Excavation;
 use App\Models\Order;
-use App\Rules\NineDigitOrderId;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +13,7 @@ class ExcavationController extends Controller
 
     public function index(Request $request)
     {
-
+        // Start with a base query for Excavations
         $query = Excavation::query();
 
         // Check if a search query parameter exists
@@ -40,12 +39,14 @@ class ExcavationController extends Controller
     {
         $request->validate([
             'engineer' => 'required',
-            'order_id' => ['required', 'integer', new NineDigitOrderId],
+            'order_id' => 'required|string',// Adjust validation as needed
             'company' => 'required',
             'location' => 'required',
             'nature_of_work' => 'required',
-            'images' => 'nullable|image',
-            'documents' => 'nullable|file',
+            'images' => 'nullable|array',
+            'images.*' => 'image',
+            'documents' => 'nullable|array',
+            'documents.*' => 'file',
         ]);
 
         // Find or create the Order
@@ -60,11 +61,19 @@ class ExcavationController extends Controller
         $excavation->nature_of_work = $request->nature_of_work;
 
         if ($request->hasFile('images')) {
-            $excavation->images = $request->file('images')->store('images', 'public');
+            $images = [];
+            foreach ($request->file('images') as $image) {
+                $images[] = $image->store('images', 'public');
+            }
+            $excavation->images = $images;
         }
 
         if ($request->hasFile('documents')) {
-            $excavation->documents = $request->file('documents')->store('documents', 'public');
+            $documents = [];
+            foreach ($request->file('documents') as $document) {
+                $documents[] = $document->store('documents', 'public');
+            }
+            $excavation->documents = $documents;
         }
 
         // Associate the Excavation with the Order
@@ -89,12 +98,14 @@ class ExcavationController extends Controller
     {
         $request->validate([
             'engineer' => 'required',
-            'order_id' => ['required', 'integer', new NineDigitOrderId],
+            'order_id' => 'required|string', // Adjust validation as needed
             'company' => 'required',
             'location' => 'required',
             'nature_of_work' => 'required',
-            'images' => 'nullable|image',
-            'documents' => 'nullable|file',
+            'images' => 'nullable|array',
+            'images.*' => 'image',
+            'documents' => 'nullable|array',
+            'documents.*' => 'file',
         ]);
 
         // Retrieve the excavation record from the database
@@ -107,17 +118,19 @@ class ExcavationController extends Controller
         $excavation->nature_of_work = $request->nature_of_work;
 
         if ($request->hasFile('images')) {
-            if ($excavation->images) {
-                Storage::disk('public')->delete($excavation->images);
+            $existingImages = $excavation->images ?? [];
+            foreach ($request->file('images') as $image) {
+                $existingImages[] = $image->store('images', 'public');
             }
-            $excavation->images = $request->file('images')->store('images', 'public');
+            $excavation->images = $existingImages;
         }
 
         if ($request->hasFile('documents')) {
-            if ($excavation->documents) {
-                Storage::disk('public')->delete($excavation->documents);
+            $existingDocuments = $excavation->documents ?? [];
+            foreach ($request->file('documents') as $document) {
+                $existingDocuments[] = $document->store('documents', 'public');
             }
-            $excavation->documents = $request->file('documents')->store('documents', 'public');
+            $excavation->documents = $existingDocuments;
         }
 
         // Update the associated Order ID if necessary

@@ -19,7 +19,7 @@
         </div>
         <div class="form-group">
             <label for="order_id">Order ID</label>
-            <input type="text" class="form-control" id="order_id" name="order_id" required pattern="\d{9}"
+            <input type="text" class="form-control" id="order_id" name="order_id" maxlength="9" required pattern="\d{9}"
                 title="Order ID must be exactly 9 digits">
         </div>
         <div class="form-group">
@@ -40,11 +40,11 @@
         </div>
         <div class="form-group">
             <label for="images">Upload Images</label>
-            <input type="file" class="form-control" id="images" name="images">
+            <input type="file" class="form-control" id="images" name="images[]" multiple>
         </div>
         <div class="form-group">
             <label for="documents">Upload Documents</label>
-            <input type="file" class="form-control" id="documents" name="documents">
+            <input type="file" class="form-control" id="documents" name="documents[]" multiple>
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
     </form>

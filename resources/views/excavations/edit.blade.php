@@ -45,11 +45,11 @@
         </div>
         <div class="form-group">
             <label for="images">Upload Images</label>
-            <input type="file" class="form-control" id="images" name="images">
+            <input type="file" class="form-control" id="images" name="images[]" multiple>
         </div>
         <div class="form-group">
             <label for="documents">Upload Documents</label>
-            <input type="file" class="form-control" id="documents" name="documents">
+            <input type="file" class="form-control" id="documents" name="documents[]" multiple>
         </div>
         <button type="submit" class="btn btn-primary">Update</button>
     </form>

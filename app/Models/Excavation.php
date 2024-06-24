@@ -9,6 +9,12 @@ class Excavation extends Model
 {
     use HasFactory;
 
+
+    protected $casts = [
+        'images' => 'array',
+        'documents' => 'array',
+    ];
+
     protected $fillable = [
         'engineer',
         'company',
